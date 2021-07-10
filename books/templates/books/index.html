@@ -1,0 +1,21 @@
+<h1>Books</h1>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>Genre</th>
+			<th>Stock</th>
+			<th>Daily Rate</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for book in books %}
+		<tr>
+			<td>{{ book.title}}</td>
+			<td>{{ book.genre}}</td>
+			<td>{{ book.stock}}</td>
+			<td>{{ book.daily_rate}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
