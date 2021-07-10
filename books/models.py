@@ -5,6 +5,9 @@ from django.utils import timezone
 class Genre(models.Model):
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class Book(models.Model):
     ISBN = models.CharField(max_length=13)
