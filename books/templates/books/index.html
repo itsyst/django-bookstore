@@ -1,21 +1,27 @@
-<h1>Books</h1>
-<table class="table">
-	<thead>
-		<tr>
-			<th>Title</th>
-			<th>Genre</th>
-			<th>Stock</th>
-			<th>Daily Rate</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for book in books %}
-		<tr>
-			<td>{{ book.title}}</td>
-			<td>{{ book.genre}}</td>
-			<td>{{ book.stock}}</td>
-			<td>{{ book.daily_rate}}</td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
+{% extends 'books/base.html' %} {% block content %}
+<div class="container">
+	<h1>Books</h1>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Title</th>
+				<th scope="col">Genre</th>
+				<th scope="col">Stock</th>
+				<th scope="col">Daily Rate</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for book in books %}
+			<tr>
+				<td>{{ book.id}}</td>
+				<td>{{ book.title}}</td>
+				<td>{{ book.genre}}</td>
+				<td>{{ book.number_in_stock}}</td>
+				<td>{{ book.daily_rate}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
