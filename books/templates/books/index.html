@@ -14,7 +14,9 @@
 		{% for book in books %}
 		<tr>
 			<td>{{ book.id}}</td>
-			<td>{{ book.title}}</td>
+			<td>
+				<a href="{% url 'books:detail' book.id%}">{{ book.title}}</a>
+			</td>
 			<td>{{ book.genre}}</td>
 			<td>{{ book.number_in_stock}}</td>
 			<td>{{ book.daily_rate}}</td>
