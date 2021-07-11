@@ -1,5 +1,5 @@
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, get_object_or_404
 from .models import Book
 
 
@@ -9,5 +9,10 @@ def index(request):
 
 
 def detail(request, book_id):
-    book = Book.objects.get(pk=book_id)
+    # try:
+    #     book = Book.objects.get(pk=book_id)
+    #     return render(request, 'books/detail.html', {'book': book})
+    # except Book.DoesNotExist:
+    #     raise Http404()
+    book = get_object_or_404(Book, pk=book_id)
     return render(request, 'books/detail.html', {'book': book})
