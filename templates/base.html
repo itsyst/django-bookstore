@@ -18,7 +18,9 @@
 	<body>
 		<nav class="navbar navbar-light bg-light">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="#">Bookstore</a>
+				<a class="navbar-brand" href="{% url 'books:index' %}"
+					>Bookstore</a
+				>
 			</div>
 		</nav>
 		<main class="container mt-5">{% block content %} {% endblock %}</main>
