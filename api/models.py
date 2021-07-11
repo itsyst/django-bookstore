@@ -7,3 +7,4 @@ class BookResource(ModelResource):
     class Meta:
         queryset = Book.objects.all()
         resource_name = 'books'
+        excludes = ['date_created', 'daily_rate']
