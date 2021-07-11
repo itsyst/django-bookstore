@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from api.models import BookResource
+
+book_resource = BookResource()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('books/', include('books.urls'))
+    path('books/', include('books.urls')),
+    path('api/', include('book_resource.urls'))
 ]
