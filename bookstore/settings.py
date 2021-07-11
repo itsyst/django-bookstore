@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-qewn-bz%peq236z^ehm1w)0lb2he!9&udqyf+#!_13ks2(s*ux
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'tranquil-harbor-34479.herokuapp.com'
+    'dgbookstore.herokuapp.com'
 ]
 
 
