@@ -6,7 +6,7 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
         fields = ['name', 'books_count']
     
-    books_count = serializers.IntegerField()
+    books_count = serializers.IntegerField(read_only=True)
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
