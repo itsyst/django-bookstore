@@ -15,7 +15,7 @@ class Book(models.Model):
     description = models.CharField(max_length=255)
     number_in_stock = models.IntegerField()
     daily_rate = models.FloatField()
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.PROTECT, related_name='books')
     date_created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
