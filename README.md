@@ -1,8 +1,8 @@
 <p align="center">
   <p align="center">
-    <a href="https://github.com/itsyst/django-bookstore" target="_blank">
-      <img src="https://camo.githubusercontent.com/d1d57549cfba796397711518ca0fe216a36780e0dbec96d458f9c1e53ed87399/68747470733a2f2f7265732e636c6f7564696e6172792e636f6d2f647a6c74786c6d396c2f696d6167652f75706c6f61642f76313630313937313337302f6c6f676f5f666436306565343439332e706e67" alt="wb" height="90">
-    </a>
+  <a href="https://github.com/itsyst/khaled_elhamzi_portfolio">
+    <img alt="logo" src="https://res.cloudinary.com/dzltxlm9l/image/upload/v1601971370/logo_fd60ee4493.png" width="90"  />
+  </a>
   </p>
   <p align="center">
     This is a simple book store management system using python django...
