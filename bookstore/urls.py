@@ -19,11 +19,11 @@ from api.models import BookResource
 from . import views
 
 
-book_resource = BookResource()
+# book_resource = BookResource()
 
 urlpatterns = [
     path('', views.home),
     path('admin/', admin.site.urls),
     path('books/', include('books.urls')),
-    path('api/', include(book_resource.urls)),
+    # path('api/', include(book_resource.urls)),
 ]
