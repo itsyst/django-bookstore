@@ -3,8 +3,8 @@ from . import views
 
 app_name = "books"
 urlpatterns = [
-    path('', views.book_list, name='index'),
-    path('<int:id>', views.book_detail),
-    path('genres', views.genre_list, name='genre_list'),
-    path('genres/<int:id>', views.genre_detail, name='genre-detail'),
+    path('', views.BookList.as_view(), name='index'),
+    path('<int:id>', views.BookDetail.as_view()),
+    path('genres', views.GenreList.as_view(), name='genre_list'),
+    path('genres/<int:id>', views.GenreDetail.as_view(), name='genre-detail'),
 ]
