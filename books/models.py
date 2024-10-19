@@ -17,6 +17,7 @@ class Book(models.Model):
     daily_rate = models.FloatField()
     genre = models.ForeignKey(Genre, on_delete=models.PROTECT, related_name='books')
     date_created = models.DateTimeField(default=timezone.now)
+    last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
