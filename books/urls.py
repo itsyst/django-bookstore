@@ -3,7 +3,7 @@ from .views import GenreViewSet, BookViewSet, ReviewViewSet
 
 #Parent routers
 router = routers.DefaultRouter()
-router.register('books', BookViewSet)
+router.register('books', BookViewSet, basename='books')
 router.register('genres', GenreViewSet)
 
 #Child routers

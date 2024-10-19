@@ -7,10 +7,16 @@ from .models import Book, Genre, Review
 from .serializers import BookSerializer, GenreSerializer, ReviewSerializer
 
 class BookViewSet(ModelViewSet):
-    queryset = Book.objects.select_related('genre').all()
     serializer_class = BookSerializer
     lookup_field = 'id'
 
+    def get_queryset(self):
+        queryset = Book.objects.select_related('genre').all()
+        genre_id = self.request.query_params.get('genre_id')
+        if genre_id is not None:
+            queryset = queryset.filter(genre_id=genre_id)
+        return  queryset
+    
     def get_serializer_context(self):
         return  {'request': self.request} 
     
