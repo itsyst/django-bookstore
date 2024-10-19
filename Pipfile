@@ -9,6 +9,7 @@ pylint-django = "*"
 django-tastypie = "*"
 gunicorn = "*"
 whitenoise = "*"
+django-filter = "*"
 
 [dev-packages]
 pylint = "*"
