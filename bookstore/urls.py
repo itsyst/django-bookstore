@@ -22,8 +22,8 @@ from . import views
 # book_resource = BookResource()
 
 urlpatterns = [
-    path('', views.home),
+    # path('', views.home),
     path('admin/', admin.site.urls),
-    path('books/', include('books.urls')),
+    path('', include('books.urls')),
     # path('api/', include(book_resource.urls)),
 ]

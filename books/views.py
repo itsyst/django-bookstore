@@ -35,6 +35,10 @@ class GenreViewSet(ModelViewSet):
         return super().destroy(request, *args, **kwargs)
     
 class ReviewViewSet(ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return Review.objects.filter(book_id=self.kwargs['book_id'])
     
+    def get_serializer_context(self):
+        return {'book_id': self.kwargs['book_id']}
