@@ -3,9 +3,8 @@ from django.db.models import Count
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
- 
-from .models import Book, Genre
-from .serializers import BookSerializer, GenreSerializer
+from .models import Book, Genre, Review
+from .serializers import BookSerializer, GenreSerializer, ReviewSerializer
 
 class BookViewSet(ModelViewSet):
     queryset = Book.objects.select_related('genre').all()
@@ -34,4 +33,8 @@ class GenreViewSet(ModelViewSet):
         if genre.books_count > 0:
             return Response({'error': 'Genre cannot be deleted. It has associated books.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
- 
+    
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    
