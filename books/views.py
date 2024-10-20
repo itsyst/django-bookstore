@@ -9,8 +9,8 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
  
 from .filters import BookFilter
 from .pagination import DefaultPagination
-from .models import Book, Cart, Genre, Review
-from .serializers import BookSerializer, CartSerializer, GenreSerializer, ReviewSerializer
+from .models import Book, Cart, CartItem, Genre, Review
+from .serializers import BookSerializer, CartItemSerializer, CartSerializer, GenreSerializer, ReviewSerializer
 
 class BookViewSet(ModelViewSet):
     queryset = Book.objects.select_related('genre').all()
@@ -60,7 +60,9 @@ class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, Gener
     serializer_class = CartSerializer
 
     
-# class CartItemViewSet(ModelViewSet):
-#     queryset = CartItem.objects.select_related('cart').all()
-#     serializer_class = CartItemSerializer
+class CartItemViewSet(ModelViewSet):
+    serializer_class = CartItemSerializer
+
+    def get_queryset(self):
+        return CartItem.objects.filter(cart_id=self.kwargs['cart_pk'])
  
