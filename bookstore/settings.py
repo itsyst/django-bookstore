@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework_nested',
+    "debug_toolbar",
     # 'books.apps.BooksConfig',
     # 'api.apps.ApiConfig'
     'books'
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 INTERNAL_IPS = [
