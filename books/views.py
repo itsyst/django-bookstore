@@ -4,12 +4,13 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+ 
 from .filters import BookFilter
 from .pagination import DefaultPagination
-from .models import Book, Genre, Review
-from .serializers import BookSerializer, GenreSerializer, ReviewSerializer
+from .models import Book, Cart, Genre, Review
+from .serializers import BookSerializer, CartSerializer, GenreSerializer, ReviewSerializer
 
 class BookViewSet(ModelViewSet):
     queryset = Book.objects.select_related('genre').all()
@@ -53,3 +54,13 @@ class ReviewViewSet(ModelViewSet):
     
     def get_serializer_context(self):
         return {'book_id': self.kwargs['book_id']}
+    
+class CartViewSet(CreateModelMixin, RetrieveModelMixin, GenericViewSet):
+    queryset = Cart.objects.prefetch_related('items__book').all()
+    serializer_class = CartSerializer
+
+    
+# class CartItemViewSet(ModelViewSet):
+#     queryset = CartItem.objects.select_related('cart').all()
+#     serializer_class = CartItemSerializer
+ 
