@@ -5,7 +5,9 @@ from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
 from .filters import BookFilter
+from .pagination import DefaultPagination
 from .models import Book, Genre, Review
 from .serializers import BookSerializer, GenreSerializer, ReviewSerializer
 
@@ -17,6 +19,7 @@ class BookViewSet(ModelViewSet):
     filterset_class = BookFilter
     search_fields = ['title', 'description']
     ordering_fields = ['number_in_stock', 'last_updated']
+    pagination_class = DefaultPagination
     lookup_field = 'id'
    
     def get_serializer_context(self):
