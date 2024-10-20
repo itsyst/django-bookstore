@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from uuid import uuid4
 
 
 class Genre(models.Model):
@@ -27,3 +28,15 @@ class Review(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     date = models.DateField(auto_now_add=True)
+
+class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField()
+
+    class META:
+        unique_together = [['cart', 'book']]
