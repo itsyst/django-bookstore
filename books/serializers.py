@@ -53,7 +53,11 @@ class AddCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['id' , 'book_id', 'quantity']
- 
+class UpdateCartItemSerializer(serializers.ModelSerializer):
+    class Meta:
+         model = CartItem
+         fields = ['quantity']
+
 class CartItemSerializer(serializers.ModelSerializer):
     book = BookSelectiveSerializer()
     total_price = serializers.SerializerMethodField()
