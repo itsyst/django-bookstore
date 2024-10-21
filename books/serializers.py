@@ -13,7 +13,6 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = ['ISBN', 'title', 'description', 'number_in_stock', 'daily_rate', 'unit_price', 'date_created', 'genre']
 
- 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
@@ -28,6 +27,33 @@ class BookSelectiveSerializer(serializers.ModelSerializer):
         model = Book
         fields = ['id', 'title', 'unit_price']
 
+class AddCartItemSerializer(serializers.ModelSerializer):
+    book_id = serializers.IntegerField()
+
+    def validate_book_id(self, value):
+        if not Book.objects.filter(pk=value).exists():
+            raise serializers.ValidationError('No book with the given Id was found.')
+        return value
+        
+    def save(self, **kwargs):
+        cart_id = self.context['cart_id']
+        book_id = self.validated_data['book_id']
+        quantity = self.validated_data['quantity']
+
+        try:
+            cart_item = CartItem.objects.get(cart_id=cart_id, book_id=book_id)
+            cart_item.quantity += quantity
+            cart_item.save()
+            self.instance = cart_item
+        except CartItem.DoesNotExist:
+            self.instance = CartItem.objects.create(cart_id=cart_id, **self.validated_data)
+ 
+        return self.instance
+
+    class Meta:
+        model = CartItem
+        fields = ['id' , 'book_id', 'quantity']
+ 
 class CartItemSerializer(serializers.ModelSerializer):
     book = BookSelectiveSerializer()
     total_price = serializers.SerializerMethodField()
