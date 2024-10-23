@@ -1,12 +1,15 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
- 
+
+from .permissions import IsAdminOrReadOnly
 from .filters import BookFilter
 from .pagination import DefaultPagination
 from .models import Book, Cart, CartItem, Customer, Genre, Review
@@ -20,6 +23,7 @@ class BookViewSet(ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['number_in_stock', 'last_updated']
     pagination_class = DefaultPagination
+    permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'id'
    
     def get_serializer_context(self):
@@ -34,6 +38,7 @@ class BookViewSet(ModelViewSet):
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.annotate(books_count=Count('books'))  # Annotate store_count here
     serializer_class = GenreSerializer
+    permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'id'
 
     def get_serializer_context(self):
@@ -74,6 +79,21 @@ class CartItemViewSet(ModelViewSet):
     def get_queryset(self):
         return CartItem.objects.filter(cart_id=self.kwargs['cart_pk'])
  
-class CustomerViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin,GenericViewSet):
+class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    permission_classes = [IsAdminUser]
+    
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes=IsAuthenticated())
+    def me(self, request):
+        if request.method == 'GET':
+            (customer, created) = Customer.objects.get_or_create(user_id=request.user.id)
+            serializer = CustomerSerializer(customer)
+            return Response(serializer.data)
+        elif request.method == 'PUT':
+            serializer = CustomerSerializer(customer, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        
+
