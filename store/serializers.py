@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book, Cart, CartItem, Customer, Genre, Review
+from .models import Book, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -89,3 +89,18 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields =['id', 'user_id', 'phone', 'birth_date']
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    book = BookSelectiveSerializer()
+
+    class Meta:
+        model = OrderItem
+        fields =['id', 'book', 'unit_price', 'quantity']
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many = True)
+
+    class Meta:
+        model = Order
+        fields =['id', 'placed_at', 'payment_status', 'customer', 'items']
