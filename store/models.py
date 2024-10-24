@@ -26,6 +26,9 @@ class Customer(models.Model):
 
     class Meta:
         ordering = ['user__first_name', 'user__last_name']
+        permissions = [
+            ('view_history', 'can view history')
+        ]
 
 class Address(models.Model):
     street = models.CharField(max_length=255)
