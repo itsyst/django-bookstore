@@ -91,7 +91,6 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields =['id', 'user_id', 'phone', 'birth_date']
 
-
 class OrderItemSerializer(serializers.ModelSerializer):
     book = BookSelectiveSerializer()
 
@@ -137,3 +136,8 @@ class CreateOrderSerializer(serializers.Serializer):
              Cart.objects.filter(pk=cart_id).delete()
 
         return order
+    
+class UpdateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['payment_status']
