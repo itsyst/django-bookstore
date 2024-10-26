@@ -13,7 +13,7 @@ from .permissions import IsAdminOrReadOnly, ViewCustomerHistoryPermissions
 from .filters import BookFilter
 from .pagination import DefaultPagination
 from .models import Book, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
-from .serializers import AddCartItemSerializer, BookSerializer, CartItemSerializer, CartSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer,  ReviewSerializer
+from .serializers import AddCartItemSerializer, BookSerializer, CartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer,  ReviewSerializer
 
 class BookViewSet(ModelViewSet):
     queryset = Book.objects.select_related('genre').all()
@@ -101,9 +101,24 @@ class CustomerViewSet(ModelViewSet):
             return Response(serializer.data)
         
 class OrderViewSet(ModelViewSet):
-    serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        serializer = CreateOrderSerializer(
+            data = request.data,
+            context = { 'user_id' : self.request.user.id}
+            )
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+        serializer = OrderSerializer(order)
+        
+        return Response(serializer.data)
+        
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        return OrderSerializer
+    
     def get_queryset(self):
         user = self.request.user
 
