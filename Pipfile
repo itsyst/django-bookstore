@@ -10,6 +10,7 @@ django-tastypie = "*"
 gunicorn = "*"
 whitenoise = "*"
 django-filter = "*"
+pillow = "*"
 
 [dev-packages]
 pylint = "*"
