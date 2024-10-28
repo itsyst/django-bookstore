@@ -55,6 +55,10 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+class BookImage(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='store/images')
+
 class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
     PAYMENT_STATUS_COMPLETE = 'C'

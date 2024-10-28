@@ -12,8 +12,8 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from .permissions import IsAdminOrReadOnly, ViewCustomerHistoryPermissions
 from .filters import BookFilter
 from .pagination import DefaultPagination
-from .models import Book, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
-from .serializers import AddCartItemSerializer, BookSerializer, CartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer, UpdateOrderSerializer ,ReviewSerializer
+from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
+from .serializers import AddCartItemSerializer, BookSerializer,BookImageSerializer, CartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer, UpdateOrderSerializer ,ReviewSerializer
 
 class BookViewSet(ModelViewSet):
     queryset = Book.objects.select_related('genre').all()
@@ -139,3 +139,11 @@ class OrderViewSet(ModelViewSet):
         customer_id = Customer.objects.only('id').get(user_id = user.id)
         return Order.objects.filter(customer_id = customer_id)
 
+class BookImageViewSet(ModelViewSet):
+    serializer_class = BookImageSerializer
+
+    def get_serializer_context(self):
+        return {'book_id' : self.kwargs['book_id']}
+    
+    def get_queryset(self):
+        return BookImage.objects.filter(book_id = self.kwargs['book_id'])

@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 from .signals import order_created
-from .models import Book, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
+from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -144,3 +144,12 @@ class UpdateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['payment_status']
+
+class BookImageSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        book_id = self.context['book_id']
+        return BookImage.objects.create(book_id = book_id, **validated_data)
+    
+    class Meta:
+        model = BookImage
+        fields = ['id','image']
