@@ -15,25 +15,6 @@ from .pagination import DefaultPagination
 from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
 from .serializers import AddCartItemSerializer, BookSerializer,BookImageSerializer, CartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer, UpdateOrderSerializer ,ReviewSerializer
 
-class BookViewSet(ModelViewSet):
-    queryset = Book.objects.select_related('genre').all()
-    serializer_class = BookSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = BookFilter
-    search_fields = ['title', 'description']
-    ordering_fields = ['number_in_stock', 'last_updated']
-    pagination_class = DefaultPagination
-    permission_classes = [IsAdminOrReadOnly]
-    lookup_field = 'id'
-   
-    def get_serializer_context(self):
-        return  {'request': self.request} 
-    
-    def destroy(self, request, *args, **kwargs):
-        book = get_object_or_404(Book, id=kwargs['id'])
-        if book.number_in_stock > 0:
-            return Response({'error': 'Book cannot be deleted as it still has stock available.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().destroy(request, *args, **kwargs)
 
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.annotate(books_count=Count('books'))  # Annotate store_count here
@@ -147,3 +128,23 @@ class BookImageViewSet(ModelViewSet):
     
     def get_queryset(self):
         return BookImage.objects.filter(book_id = self.kwargs['book_id'])
+    
+class BookViewSet(ModelViewSet):
+    queryset = Book.objects.prefetch_related('images').all()
+    serializer_class = BookSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = BookFilter
+    search_fields = ['title', 'description']
+    ordering_fields = ['number_in_stock', 'last_updated']
+    pagination_class = DefaultPagination
+    permission_classes = [IsAdminOrReadOnly]
+    lookup_field = 'id'
+   
+    def get_serializer_context(self):
+        return  {'request': self.request} 
+    
+    def destroy(self, request, *args, **kwargs):
+        book = get_object_or_404(Book, id=kwargs['id'])
+        if book.number_in_stock > 0:
+            return Response({'error': 'Book cannot be deleted as it still has stock available.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().destroy(request, *args, **kwargs)

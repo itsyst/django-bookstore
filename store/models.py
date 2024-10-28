@@ -56,7 +56,7 @@ class Book(models.Model):
         return self.title
 
 class BookImage(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='images')
     image = models.ImageField(upload_to='store/images')
 
 class Order(models.Model):

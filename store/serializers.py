@@ -4,17 +4,29 @@ from .signals import order_created
 from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
 
 class GenreSerializer(serializers.ModelSerializer):
+    books_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Genre
         fields = ['name', 'books_count']
     
-    books_count = serializers.IntegerField(read_only=True)
-
+class BookImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookImage
+        fields = ['id','image']
+    
+    def create(self, validated_data):
+        book_id = self.context['book_id']
+        return BookImage.objects.create(book_id = book_id, **validated_data)
+    
 class BookSerializer(serializers.ModelSerializer):
+    images = BookImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Book
-        fields = ['ISBN', 'title', 'description', 'number_in_stock', 'daily_rate', 'unit_price', 'date_created', 'genre']
-
+        fields = ['ISBN', 'title', 'description', 'number_in_stock', 'daily_rate', 'unit_price', 'date_created', 'genre', 'images']
+   
+    
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
@@ -31,6 +43,11 @@ class BookSelectiveSerializer(serializers.ModelSerializer):
 
 class AddCartItemSerializer(serializers.ModelSerializer):
     book_id = serializers.IntegerField()
+
+    class Meta:
+        model = CartItem
+        fields = ['id' , 'book_id', 'quantity']
+
 
     def validate_book_id(self, value):
         if not Book.objects.filter(pk=value).exists():
@@ -51,10 +68,6 @@ class AddCartItemSerializer(serializers.ModelSerializer):
             self.instance = CartItem.objects.create(cart_id=cart_id, **self.validated_data)
  
         return self.instance
-
-    class Meta:
-        model = CartItem
-        fields = ['id' , 'book_id', 'quantity']
         
 class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,29 +78,30 @@ class CartItemSerializer(serializers.ModelSerializer):
     book = BookSelectiveSerializer()
     total_price = serializers.SerializerMethodField()
 
-    def get_total_price(self, cart_item:CartItem):
-        return cart_item.quantity * cart_item.book.unit_price
- 
     class Meta:
         model = CartItem
         fields = ['id', 'book', 'quantity', 'total_price']
+
+
+    def get_total_price(self, cart_item:CartItem):
+        return cart_item.quantity * cart_item.book.unit_price
 
 class CartSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     items = CartItemSerializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
 
-    def get_total_price(self, cart):
-        cards = cart.items.all()
-        return sum([ item.quantity * item.book.unit_price for item in cards])
-    
     class Meta:
         model = Cart
         fields = ['id','items', 'total_price']
 
+    def get_total_price(self, cart):
+        cards = cart.items.all()
+        return sum([ item.quantity * item.book.unit_price for item in cards])
+ 
 class CustomerSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField(read_only=True)
-    
+    user_id = serializers.IntegerField(read_only=True) 
+
     class Meta:
         model = Customer
         fields =['id', 'user_id', 'phone', 'birth_date']
@@ -144,12 +158,3 @@ class UpdateOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['payment_status']
-
-class BookImageSerializer(serializers.ModelSerializer):
-    def create(self, validated_data):
-        book_id = self.context['book_id']
-        return BookImage.objects.create(book_id = book_id, **validated_data)
-    
-    class Meta:
-        model = BookImage
-        fields = ['id','image']
