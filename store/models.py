@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 from uuid import uuid4
- 
+from .validators import validate_file_size
 
 class Customer(models.Model):
     phone = models.CharField(max_length=255)
@@ -57,7 +57,7 @@ class Book(models.Model):
 
 class BookImage(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='images')
-    image = models.ImageField(upload_to='store/images')
+    image = models.ImageField(upload_to='store/images', validators=[validate_file_size])
 
 class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
