@@ -22,18 +22,32 @@ class GenreAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(books_count = Count('books'))
 
+class BookImageInline(admin.TabularInline):
+    model = models.BookImage
+    readonly_fields = ['thumbnail']
+
+    def thumbnail(self, instance):
+        if instance.image.name != '':
+            return format_html(f'<img src="{instance.image.url}" class="thumbnail">') 
+        return ''
+
 @admin.register(models.Book)
 class BookAdmin(admin.ModelAdmin):
     autocomplete_fields = ['genre']
     exclude = ('date_created',)
     list_display = ('ISBN', 'title', 'description',
                     'number_in_stock', 'unit_price', 'daily_rate')
-    
+    inlines = [BookImageInline]
     list_editable = ['unit_price']
     list_filter = ['genre', 'last_updated']
     search_fields = ['ISBN', 'title']
     list_select_related = ['genre']
     list_per_page = 10
+
+    class Media:
+        css = {
+            'all' : ['store/styles.css']
+        }
  
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
@@ -64,7 +78,6 @@ class OrderItemInline(admin.TabularInline):
     max_num = 10
     model = models.OrderItem
     extra = 0
-
 
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):

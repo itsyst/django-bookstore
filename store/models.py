@@ -57,8 +57,7 @@ class Book(models.Model):
 
 class BookImage(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE,related_name='images')
-    image = models.ImageField(upload_to='store/images', validators=[validate_file_size])
-
+    image = models.ImageField(upload_to='store/images')
 class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
     PAYMENT_STATUS_COMPLETE = 'C'
