@@ -1,5 +1,9 @@
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from django.core.mail import send_mail, BadHeaderError
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework import status
@@ -7,14 +11,13 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet, ViewSet
 
 from .permissions import IsAdminOrReadOnly, ViewCustomerHistoryPermissions
 from .filters import BookFilter
 from .pagination import DefaultPagination
 from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
 from .serializers import AddCartItemSerializer, BookSerializer,BookImageSerializer, CartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer, UpdateOrderSerializer ,ReviewSerializer
-
 
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.annotate(books_count=Count('books'))  # Annotate store_count here
@@ -148,3 +151,24 @@ class BookViewSet(ModelViewSet):
         if book.number_in_stock > 0:
             return Response({'error': 'Book cannot be deleted as it still has stock available.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
+
+class SendEmailViewSet(ViewSet):
+    @action(detail=False, methods=['post', 'get'])
+    def send_email(self, request):
+        subject = "Test Email"
+        message = "This is a test email sent from Django using smtp4dev."
+        recipient_list = ['to@recipient.com']
+
+        try:
+            send_mail(
+                subject,
+                message,
+                from_email="from@khaled.com",
+                recipient_list=recipient_list,
+                fail_silently=False,
+            )
+            return JsonResponse({"message": "Email sent successfully"})
+        except BadHeaderError:
+            return JsonResponse({"error": "Invalid header found"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
