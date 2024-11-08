@@ -12,3 +12,5 @@ export const getDynamicApiUrl = () => {
     const bookId = currentUrl.split('/').slice(-2, -1)[0]; // Extract book ID from the URL
     return getBookImageUploadUrl(bookId); // Use the extracted book ID
 };
+
+export const getEmailApiUrl = () => `${BASE_URL}/messages`;

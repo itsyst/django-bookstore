@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { getDynamicApiUrl } from './config/apiConfig'; // Import the API config function
+import { getDynamicApiUrl } from './config/apiConfig';
+import SendEmailButton from './utility/SendEmailButton';
 
 const App = () => {
   const [file, setFile] = useState(null);
@@ -111,9 +112,10 @@ const App = () => {
             onChange={handleFileChange}
           />
         </div>
-        <button className="btn btn-primary" type="submit" disabled={!file}>
+        <button className="btn btn-primary me-3" type="submit" disabled={!file}>
           Upload
         </button>
+        <SendEmailButton />
       </form>
     </div>
   );
