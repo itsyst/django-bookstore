@@ -1,11 +1,12 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-from django.core.mail import send_mail, BadHeaderError
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from django.core.mail import EmailMessage, BadHeaderError
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import action    
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
@@ -152,22 +153,37 @@ class BookViewSet(ModelViewSet):
             return Response({'error': 'Book cannot be deleted as it still has stock available.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().destroy(request, *args, **kwargs)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class SendEmailViewSet(ViewSet):
+    parser_classes = [MultiPartParser, FormParser]  # Accept multipart form data
+    
     @action(detail=False, methods=['post', 'get'])
     def send_email(self, request):
         subject = "Test Email"
-        message = "This is a test email sent from Django using smtp4dev."
-        recipient_list = ['to@recipient.com']
+        message = "This is a test email sent from Django using smtp4dev and containing an attachment."
+        from_email="from@khaled.com"
+        to = ['to@recipient.com']
+
+        # Retrieve the file from request.FILES
+        attachment = request.FILES.get('attachment')
 
         try:
-            send_mail(
+            email_message = EmailMessage(
                 subject,
                 message,
-                from_email="from@khaled.com",
-                recipient_list=recipient_list,
-                fail_silently=False,
+                from_email= from_email,
+                to=to
             )
+
+            # Check if the file exists and attach it
+            if attachment:
+                email_message.attach(attachment.name, attachment.read(), attachment.content_type)
+
+            # Send the email
+            email_message.send()
+
             return JsonResponse({"message": "Email sent successfully"})
+        
         except BadHeaderError:
             return JsonResponse({"error": "Invalid header found"}, status=400)
         except Exception as e:
