@@ -11,6 +11,7 @@ gunicorn = "*"
 whitenoise = "*"
 django-filter = "*"
 pillow = "*"
+django-templated-mail = "*"
 
 [dev-packages]
 pylint = "*"

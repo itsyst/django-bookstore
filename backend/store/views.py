@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, ViewSet
+from templated_mail.mail import BaseEmailMessage
 
 from .permissions import IsAdminOrReadOnly, ViewCustomerHistoryPermissions
 from .filters import BookFilter
@@ -160,27 +161,36 @@ class SendEmailViewSet(ViewSet):
     @action(detail=False, methods=['post', 'get'])
     def send_email(self, request):
         subject = "Test Email"
-        message = "This is a test email sent from Django using smtp4dev and containing an attachment."
-        from_email="from@khaled.com"
+        # message = "This is a test email sent from Django using smtp4dev and containing an attachment."
+        # from_email="from@khaled.com"
+        name = 'Joe'
         to = ['to@recipient.com']
 
         # Retrieve the file from request.FILES
         attachment = request.FILES.get('attachment')
 
         try:
-            email_message = EmailMessage(
-                subject,
-                message,
-                from_email= from_email,
-                to=to
+            # email_message = EmailMessage(
+            #     subject,
+            #     message,
+            #     from_email= from_email,
+            #     to=to
+            # )
+
+            base_message = BaseEmailMessage(
+                template_name='../templates/emails/email_template.html',
+                context= {
+                    'subject': subject,
+                    'name':name,
+                }
             )
 
             # Check if the file exists and attach it
             if attachment:
-                email_message.attach(attachment.name, attachment.read(), attachment.content_type)
+                base_message.attach(attachment.name, attachment.read(), attachment.content_type)
 
             # Send the email
-            email_message.send()
+            base_message.send(to)
 
             return JsonResponse({"message": "Email sent successfully"})
         
