@@ -12,6 +12,7 @@ whitenoise = "*"
 django-filter = "*"
 pillow = "*"
 django-templated-mail = "*"
+redis = "*"
 
 [dev-packages]
 pylint = "*"
