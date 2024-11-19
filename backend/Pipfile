@@ -18,6 +18,7 @@ celery = "*"
 [dev-packages]
 pylint = "*"
 autopep8 = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.13.0"
