@@ -1,0 +1,93 @@
+services:
+  # Redis Stack Server
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend_network
+
+  # SMTP4Dev (for email testing)
+  smtp:
+    image: rnwood/smtp4dev
+    container_name: smtp4dev
+    ports:
+      - "5000:80"
+      - "2525:25"
+    networks:
+      - backend_network
+
+  # Django Backend
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    command: /app/start.sh # Run the shell script
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    restart: always
+    networks:
+      - backend_network
+    depends_on:
+      - redis
+      - smtp
+
+  # Celery Worker
+  celery:
+    build:
+      context: ./backend
+    container_name: worker
+    working_dir: /app
+    command: celery -A app worker --pool=solo --loglevel=info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - backend_network
+
+  # Flower Monitoring
+  flower:
+    build:
+      context: ./backend
+    container_name: flower
+    working_dir: /app
+    command: celery -A app flower --port=5555
+    volumes:
+      - ./backend:/app
+    ports:
+      - "5556:5555"
+    depends_on:
+      - backend
+      - redis
+      - celery
+    networks:
+      - backend_network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    command: npm start
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend_network
+    depends_on:
+      - backend
+
+networks:
+  backend_network:
+    driver: bridge
+  frontend_network:
+    driver: bridge
