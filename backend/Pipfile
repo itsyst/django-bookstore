@@ -13,6 +13,7 @@ django-filter = "*"
 pillow = "*"
 django-templated-mail = "*"
 redis = "*"
+celery = "*"
 
 [dev-packages]
 pylint = "*"

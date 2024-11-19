@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -184,10 +185,24 @@ SIMPLE_JWT = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 2525
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+# EMAIL_HOST = 'localhost'
+EMAIL_HOST = 'smtp4dev'
+EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False 
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 DEFAULT_FROM_EMAIL = 'from@domain.com'
+
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'  # Use the service name 'redis' defined in docker-compose.yml
+
+CELERY_BEAT_SCHEDULE = {
+    'notify_customers':{
+        'task':'store.tasks.notify_customers', 
+        'schedule': 5,
+        #'schedule': crontab(minute='*/15') # Execute the task every 15 min
+        # 'schedule': crontab(day_of_week=3, hour=7, minute=30) # Execute the task every wednesday at 7:30
+        'args':['Hello from Celery'],
+    }
+} 

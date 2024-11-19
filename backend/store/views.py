@@ -20,6 +20,7 @@ from .filters import BookFilter
 from .pagination import DefaultPagination
 from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
 from .serializers import AddCartItemSerializer, BookSerializer,BookImageSerializer, CartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer, UpdateOrderSerializer ,ReviewSerializer
+from .tasks import notify_customers
 
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.annotate(books_count=Count('books'))  # Annotate store_count here
@@ -192,6 +193,8 @@ class SendEmailViewSet(ViewSet):
             # Send the email
             base_message.send(to)
 
+            notify_customers.delay('Hello Joe')
+            
             return JsonResponse({"message": "Email sent successfully"})
         
         except BadHeaderError:
