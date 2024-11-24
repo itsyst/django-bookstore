@@ -1,8 +1,9 @@
+from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers
 from .signals import order_created
 from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, OrderItem, Review
-
+ 
 class GenreSerializer(serializers.ModelSerializer):
     books_count = serializers.IntegerField(read_only=True)
 
@@ -21,10 +22,10 @@ class BookImageSerializer(serializers.ModelSerializer):
     
 class BookSerializer(serializers.ModelSerializer):
     images = BookImageSerializer(many=True, read_only=True)
-
+    
     class Meta:
         model = Book
-        fields = ['ISBN', 'title', 'description', 'number_in_stock', 'daily_rate', 'unit_price', 'date_created', 'genre', 'images']
+        fields = ['id','ISBN', 'title', 'description', 'number_in_stock', 'daily_rate', 'unit_price', 'date_created', 'genre', 'images']
    
     
 class ReviewSerializer(serializers.ModelSerializer):
