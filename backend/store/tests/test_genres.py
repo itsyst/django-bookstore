@@ -1,5 +1,8 @@
 from rest_framework import status
+from store.models import Genre
+from model_bakery import baker
 import pytest
+
 
 
 @pytest.fixture
@@ -48,5 +51,31 @@ class TestCreateGenre:
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data['id'] > 0
 
+
+@pytest.mark.django_db
+class TestRetrieveGenre:
+    def test_if_genre_exists_returns_200(self, api_client):
+        #Arrange
+        genre = baker.make(Genre)
+ 
+        #Act
+        response = api_client.get(f'/genres/{genre.id}/')
+
+        #Assert
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {
+            'id' : genre.id,
+            'name': genre.name,
+            'books_count': 0
+        }
+
+    def test_if_genre_does_not_exists_returns_404(self, api_client):
+        #Act
+        invalid_genre_id = 999 
+        response = api_client.get(f'/genres/{invalid_genre_id}/')
+
+        #Assert
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+ 
 # RUN TEST: pytest
 # RUN TEST: ptw
