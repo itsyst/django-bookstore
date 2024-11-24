@@ -8,7 +8,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ['name', 'books_count']
+        fields = ['id','name', 'books_count']
     
 class BookImageSerializer(serializers.ModelSerializer):
     class Meta:
