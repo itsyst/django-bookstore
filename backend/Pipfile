@@ -14,6 +14,7 @@ pillow = "*"
 django-templated-mail = "*"
 redis = "*"
 celery = "*"
+django-silk = "*"
 
 [dev-packages]
 pylint = "*"
