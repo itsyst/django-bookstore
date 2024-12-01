@@ -68,8 +68,8 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware"
 ]
 
-# if DEBUG:
-#     MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
+if DEBUG:
+    MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -210,3 +210,17 @@ CELERY_BEAT_SCHEDULE = {
         'args':['Hello from Celery'],
     }
 } 
+
+
+# Configure django-redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        # 'LOCATION': 'redis://127.0.0.1:6379/0',  # Update with your Redis server's URL
+        'LOCATION': 'redis://redis:6379/0',  # (Docker)
+        'TIMEOUT': 10,  # Cache out in 10 seconds
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
