@@ -22,6 +22,10 @@ from .models import Book, BookImage, Cart, CartItem, Customer, Genre, Order, Ord
 from .serializers import AddCartItemSerializer, BookSerializer,BookImageSerializer, CartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, GenreSerializer, OrderItemSerializer, OrderSerializer, UpdateCartItemSerializer, UpdateOrderSerializer ,ReviewSerializer
 from .tasks import notify_customers
 
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+import requests
+
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.annotate(books_count=Count('books'))  # Annotate store_count here
     serializer_class = GenreSerializer
@@ -160,6 +164,7 @@ class SendEmailViewSet(ViewSet):
     parser_classes = [MultiPartParser, FormParser]  # Accept multipart form data
     
     @action(detail=False, methods=['post', 'get'])
+    @method_decorator(cache_page(10))  # Cache the response for 10 seconds
     def send_email(self, request):
         subject = "Test Email"
         # message = "This is a test email sent from Django using smtp4dev and containing an attachment."
@@ -193,10 +198,27 @@ class SendEmailViewSet(ViewSet):
             # Send the email
             base_message.send(to)
 
+            # Simulate an external API call
+            response = requests.get('https://httpbin.org/delay/2')
+            httpbin = response.json()
+
             notify_customers.delay('Hello Joe')
-            
-            return JsonResponse({"message": "Email sent successfully"})
-        
+
+     
+            cache_key = "test_view_cache"
+            cached_data = cache.get(cache_key)
+
+            if not cached_data:
+                # Fresh response
+                cached_data = { "is_cached": False, "message": "Fresh response", "httpbin": httpbin}
+                cache.set(cache_key, cached_data)  
+            else:
+                cached_data = { "is_cached": True, "message": "Served from cache", "httpbin": httpbin}
+
+            return JsonResponse({
+                "data": cached_data
+            })
+                    
         except BadHeaderError:
             return JsonResponse({"error": "Invalid header found"}, status=400)
         except Exception as e:

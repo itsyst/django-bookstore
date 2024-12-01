@@ -5,6 +5,8 @@ import { getEmailApiUrl } from '../config/apiConfig';
 
 const SendEmailButton = ({ className }) => {
     const [file, setFile] = useState(null);
+    const [statusMessage, setStatusMessage] = useState(null);
+    const [statusType, setStatusType] = useState(null);
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -19,7 +21,8 @@ const SendEmailButton = ({ className }) => {
             console.log('API URL:', apiUrl);
 
             if (!file) {
-                alert('Please select a file to attach');
+                setStatusMessage('Please select a file to attach.');
+                setStatusType('warning');
                 return
             }
 
@@ -36,22 +39,43 @@ const SendEmailButton = ({ className }) => {
             });
 
             if (response.status === 200) {
-                alert('Email sent successfully!');
+                const { data } = response.data;
+                setStatusMessage(`Email sent successfully! Message: ${data.message}.`);
+                (data.is_cached) ? setStatusType('success') : setStatusType('info');
             } else {
-                alert('Failed to send email.');
+                setStatusMessage('Failed to send email. Please try again.');
+                setStatusType('danger');
             }
+
         } catch (error) {
             console.error('Error sending email:', error);
-            alert('An error occurred while sending the email.');
+
+            // Handle specific error cases
+            if (error.response) {
+                setStatusMessage(error.response.data.message || 'Failed to send email.');
+            } else if (error.request) {
+                setStatusMessage('Could not reach the server. Please try again later.');
+            } else {
+                setStatusMessage('An unexpected error occurred.');
+            }
+
+            setStatusType('danger');
         }
     };
 
     return (
         <div className='mt-3'>
             <input type="file" onChange={handleFileChange} className='mb-3 form-control' />
-            <button className={`btn btn-success ${className}`} onClick={handleSendEmail}>
+            <button className={`mb-3 btn btn-success ${className}`} onClick={handleSendEmail}>
                 Send Email
             </button>
+
+            {/* Status Message */}
+            {statusMessage && (
+                <div className={`alert alert-${statusType}`} role="alert">
+                    {statusMessage}
+                </div>
+            )}
         </div>
     );
 };
