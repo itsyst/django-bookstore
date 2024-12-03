@@ -6,8 +6,9 @@ DEBUG = True
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-qewn-bz%peq236z^ehm1w)0lb2he!9&udqyf+#!_13ks2(s*ux'
 
-MIDDLEWARE = os.environ['MIDDLEWARE']
-MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
+# MIDDLEWARE += ['silk.middleware.SilkyMiddleware']
+MIDDLEWARE.append('silk.middleware.SilkyMiddleware')
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
