@@ -25,7 +25,10 @@ from .tasks import notify_customers
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 import requests
+import logging
 
+logger = logging.getLogger(__name__)
+ 
 class GenreViewSet(ModelViewSet):
     queryset = Genre.objects.annotate(books_count=Count('books'))  # Annotate store_count here
     serializer_class = GenreSerializer
@@ -183,43 +186,63 @@ class SendEmailViewSet(ViewSet):
             #     to=to
             # )
 
-            base_message = BaseEmailMessage(
-                template_name='../templates/emails/email_template.html',
-                context= {
-                    'subject': subject,
-                    'name':name,
-                }
-            )
+            # Send email
+            self.send_email_with_attachment(subject, name, to, attachment)
+ 
 
-            # Check if the file exists and attach it
-            if attachment:
-                base_message.attach(attachment.name, attachment.read(), attachment.content_type)
-
-            # Send the email
-            base_message.send(to)
-
-            # Simulate an external API call
-            response = requests.get('https://httpbin.org/delay/2')
-            httpbin = response.json()
-
+            # Simulate external API call
+            external_data = self.fetch_external_data("https://httpbin.org/delay/2")
+ 
             notify_customers.delay('Hello Joe')
-
-     
+   
             cache_key = "test_view_cache"
             cached_data = cache.get(cache_key)
 
             if not cached_data:
                 # Fresh response
-                cached_data = { "is_cached": False, "message": "Fresh response", "httpbin": httpbin}
+                cached_data = { "is_cached": False, "message": "Fresh response", "httpbin": external_data}
                 cache.set(cache_key, cached_data)  
             else:
-                cached_data = { "is_cached": True, "message": "Served from cache", "httpbin": httpbin}
+                cached_data = { "is_cached": True, "message": "Served from cache", "httpbin": external_data}
 
             return JsonResponse({
                 "data": cached_data
             })
                     
         except BadHeaderError:
+            logger.error("Invalid email header detected")
             return JsonResponse({"error": "Invalid header found"}, status=400)
         except Exception as e:
+            logger.error(f"An error occurred: {e}")
             return JsonResponse({"error": str(e)}, status=500)
+        
+
+    def send_email_with_attachment(self, subject, recipient_name, recipients, attachment):
+        """
+        Sends an email with an optional attachment.
+        """
+        base_message = BaseEmailMessage(
+            template_name='../templates/emails/email_template.html',
+            context={
+                'subject': subject,
+                'name': recipient_name,
+            }
+        )
+
+        # Check if the file exists and attach it
+        if attachment:
+            base_message.attach(attachment.name, attachment.read(), attachment.content_type)
+ 
+        # Send the email
+        base_message.send(recipients)
+        logger.info(f"Email sent to {recipients}")
+
+    def fetch_external_data(self, url):
+        """
+        Fetches external data from the provided URL.
+        """
+        logger.info('Calling httpbin')
+        response = requests.get(url)
+        logger.info('Recived the response')
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        return response.json()
