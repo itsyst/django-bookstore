@@ -36,11 +36,13 @@ filelock==3.16.1
 Flask==3.1.0
 Flask-Cors==5.0.0
 Flask-Login==0.6.3
+flower==2.0.1
 gevent==24.11.1
 geventhttpclient==2.3.3
 gprof2dot==2024.6.6
 greenlet==3.1.1
 gunicorn==23.0.0
+humanize==4.11.0
 idna==3.10
 iniconfig==2.0.0
 isort==5.13.2
@@ -58,6 +60,7 @@ pillow==11.0.0
 pipenv==2024.1.0
 platformdirs==4.3.6
 pluggy==1.5.0
+prometheus_client==0.21.1
 prompt_toolkit==3.0.48
 psutil==6.1.0
 pycodestyle==2.12.1
@@ -72,6 +75,7 @@ pytest-watch==4.2.0
 python-dateutil==2.9.0.post0
 python-mimeparse==2.0.0
 python3-openid==3.2.0
+pytz==2024.2
 pyzmq==26.2.0
 redis==5.2.0
 requests==2.32.3
@@ -82,6 +86,7 @@ social-auth-app-django==5.4.2
 social-auth-core==4.5.4
 sqlparse==0.5.2
 tomlkit==0.13.2
+tornado==6.4.2
 tzdata==2024.2
 urllib3==2.2.3
 vine==5.1.0
