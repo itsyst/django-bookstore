@@ -1,5 +1,5 @@
 // Define the base API URL
-const BASE_URL = 'http://127.0.0.1:8000'; // Your backend base URL
+const BASE_URL = process.env.REACT_APP_API_URL; // Your backend base URL
 
 export const getBookImageUploadUrl = (bookId) => {
     // Construct the API URL based on the book ID
