@@ -1,18 +1,14 @@
 #!/bin/bash
 # Activate the virtual environment
-# source .venv/bin/activate -> Local
 source /app/.venv/bin/activate
 
-# Run Celery in the background
-celery -A app worker --loglevel=info &
+# Run Celery worker in the background
+# celery -A app worker --pool=solo --loglevel=info &
 
-# Run Celery in the background
-# celery -A app beat --loglevel=info &
+# Run Flower for monitoring
+# celery -A app flower --port=5555 &
 
-# Run Celery in the background
-celery -A app flower
-
-# Install the dependencies (in case anything was missed during Docker image build)
+# Install dependencies
 pip install --no-cache-dir -r /app/requirements.txt
 
 # Prepare static directories 
