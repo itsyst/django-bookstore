@@ -4,16 +4,19 @@
 source /app/.venv/bin/activate
 
 # Run Celery in the background
-# celery -A app worker --loglevel=info &
+celery -A app worker --loglevel=info &
 
 # Run Celery in the background
 # celery -A app beat --loglevel=info &
 
 # Run Celery in the background
-# celery -A app flower
+celery -A app flower
 
 # Install the dependencies (in case anything was missed during Docker image build)
 pip install --no-cache-dir -r /app/requirements.txt
+
+# Prepare static directories 
+python /app/manage.py collectstatic --noinput
 
 # Run Django migrations
 python /app/manage.py migrate
